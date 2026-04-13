@@ -660,26 +660,6 @@
         }
 
         window.onload = () => loadFrontendMenu();
-    
-
-        const defaultItems = [
-            { _id:1, name:'Paneer Tikka',  price:220, category:'Starter',     img:'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=400' },
-            { _id:2, name:'Veg Biryani',   price:180, category:'Main Course', img:'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400' },
-            { _id:3, name:'Masala Chai',   price:40,  category:'Drink',       img:'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400' },
-            { _id:4, name:'Samosa',        price:60,  category:'Starter',     img:'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400' },
-            { _id:5, name:'Dal Makhani',   price:160, category:'Main Course', img:'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400' },
-            { _id:6, name:'Cold Coffee',   price:80,  category:'Drink',       img:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400' },
-        ];
-
-        async function loadFrontendMenu() {
-            try {
-                const res  = await fetch(`${API}/api/menu`);
-                const data = await res.json();
-                renderMenuItems((data.success && data.data.length > 0) ? data.data : defaultItems);
-            } catch { renderMenuItems(defaultItems); }
-        }
-
-        window.onload = () => loadFrontendMenu();
     </script>
 </body>
 </html>
