@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sushil Admin | Ultimate Control Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            transition: 0.3s;
+        }
+
+        body.night-mode {
+            background-color: #0c0a09;
+            color: #e7e5e4;
+        }
+
+        .night-mode .bg-white {
+            background-color: #1c1917 !important;
+            border-color: #292524 !important;
+        }
+
+        .night-mode h2,
+        .night-mode h3,
+        .night-mode td,
+        .night-mode th,
+        .night-mode p:not(.text-stone-500) {
+            color: #fafaf9 !important;
+        }
+
+        .active-link {
+            background-color: #c2410c !important;
+            color: white !important;
+            border-radius: 8px;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .food-card img {
+            height: 100px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #d6d3d1;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #22c55e;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        .pay-btn.active {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        .night-mode .pay-btn.active {
+            background-color: #c2410c;
+            border-color: #c2410c;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden bg-stone-50">
+
+    <aside class="w-64 bg-stone-900 text-white flex flex-col p-6 hidden md:flex">
+        <div class="mb-10 px-2">
+            <h1 class="text-xl font-bold tracking-tighter">SUSHIL <span class="text-orange-500">ADMIN</span></h1>
+            <p class="text-[10px] text-stone-500 mt-1 uppercase tracking-widest">Control Center v2.6</p>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <a href="javascript:void(0)" onclick="showSection('dashboard', this)"
+                class="nav-link active-link flex items-center gap-3 p-3 text-sm font-medium transition">
+                <i class="fas fa-chart-pie w-5"></i> Dashboard
+            </a>
+            <a href="javascript:void(0)" onclick="showSection('online-orders', this)"
+                class="nav-link flex items-center gap-3 p-3 text-stone-400 hover:text-white text-sm font-medium transition">
+                <i class="fas fa-globe w-5"></i> Online Orders
+            </a>
+            <a href="javascript:void(0)" onclick="showSection('menu', this)"
+                class="nav-link flex items-center gap-3 p-3 text-stone-400 hover:text-white text-sm font-medium transition">
+                <i class="fas fa-utensils w-5"></i> Menu Manager
+            </a>
+            <a href="javascript:void(0)" onclick="showSection('reservations', this)"
+                class="nav-link flex items-center gap-3 p-3 text-stone-400 hover:text-white text-sm font-medium transition">
+                <i class="fas fa-calendar-check w-5"></i> Reservations
+            </a>
+            <a href="javascript:void(0)" onclick="showSection('feedback', this)"
+                class="nav-link flex items-center gap-3 p-3 text-stone-400 hover:text-white text-sm font-medium transition">
+                <i class="fas fa-comment-dots w-5"></i> Feedback
+            </a>
+            <a href="javascript:void(0)" onclick="showSection('settings', this)"
+                class="nav-link flex items-center gap-3 p-3 text-stone-400 hover:text-white text-sm font-medium transition">
+                <i class="fas fa-cog w-5"></i> Settings
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-y-auto">
+        <header class="bg-white border-b px-8 py-4 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+            <h2 id="page-title" class="font-bold text-stone-800 text-sm uppercase tracking-widest">Dashboard</h2>
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p class="text-xs font-bold text-stone-900">Sushil Kumar</p>
+                    <p id="status-text" class="text-[10px] text-green-600 font-bold uppercase">System Online</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-stone-900 flex items-center justify-center text-orange-500 font-bold border-2 border-orange-500/20">S</div>
+                <button onclick="adminLogout()" title="Logout" class="w-9 h-9 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-red-400 hover:bg-red-100 transition text-sm">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="p-8 max-w-7xl mx-auto w-full">
+
+            <div id="section-dashboard" class="admin-section animate-fade-in space-y-8">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-100">
+                        <p class="text-stone-500 text-[10px] font-bold uppercase">Total Revenue</p>
+                        <h3 class="text-xl font-bold" id="revenue-display">₹0</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-l-4 border-l-purple-500">
+                        <p class="text-stone-500 text-[10px] font-bold uppercase">Offline Orders</p>
+                        <h3 id="offline-count-display" class="text-xl font-bold text-purple-600">0</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-l-4 border-l-blue-500">
+                        <p class="text-stone-500 text-[10px] font-bold uppercase">Online Orders</p>
+                        <h3 id="online-count-display" class="text-xl font-bold text-blue-600">1</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-l-4 border-l-orange-500">
+                        <p class="text-stone-500 text-[10px] font-bold uppercase">Total Orders</p>
+                        <h3 id="total-orders-display" class="text-xl font-bold text-orange-600">1</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-l-4 border-l-yellow-500">
+                        <p class="text-stone-500 text-[10px] font-bold uppercase">Avg Rating</p>
+                        <h3 class="text-xl font-bold text-yellow-600"><i class="fas fa-star text-xs"></i> 5.0</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-l-4 border-l-green-500">
+                        <p class="text-stone-500 text-[10px] font-bold uppercase">Seat Booking</p>
+                        <h3 id="seat-booking-display" class="text-xl font-bold text-green-600">1</h3>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-stone-800 uppercase text-xs tracking-widest">Offline POS Menu</h3>
+                            <input type="text" id="posSearch" onkeyup="filterMenu()" placeholder="Filter food..."
+                                class="px-3 py-1 border rounded-lg text-xs outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="posMenuContainer"></div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl shadow-xl border h-fit sticky top-24">
+                        <h3 class="font-bold text-xs uppercase mb-6 border-b pb-4">Live Billing</h3>
+                        <div id="cart-items" class="space-y-4 mb-6">
+                            <p class="text-stone-400 text-xs italic">No items selected...</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <p class="text-[10px] font-bold text-stone-400 uppercase mb-2">Payment Method</p>
+                            <div class="flex gap-2">
+                                <button onclick="setPaymentMode('Cash')" id="pay-cash"
+                                    class="pay-btn active flex-1 border py-2 rounded-lg text-[10px] font-bold transition">CASH</button>
+                                <button onclick="setPaymentMode('Online')" id="pay-online"
+                                    class="pay-btn flex-1 border py-2 rounded-lg text-[10px] font-bold transition">ONLINE</button>
+                            </div>
+                        </div>
+
+                        <div class="border-t pt-4 font-bold text-lg flex justify-between"><span>Total</span><span
+                                id="total-price">₹0</span></div>
+                        <button onclick="completeOfflineOrder()"
+                            class="w-full mt-6 bg-stone-900 text-white py-4 rounded-xl font-bold uppercase text-[10px] hover:bg-orange-600 transition">Print
+                            & Save Order</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-online-orders" class="admin-section hidden animate-fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Online Orders</h3>
+                    <span id="orders-count-badge" class="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full"></span>
+                </div>
+                <div class="bg-white rounded-2xl border overflow-x-auto">
+                    <table class="w-full text-left min-w-[700px]">
+                        <thead class="bg-stone-50 text-[10px] uppercase font-bold text-stone-400">
+                            <tr>
+                                <th class="p-4">Order ID</th>
+                                <th class="p-4">Customer</th>
+                                <th class="p-4">Items</th>
+                                <th class="p-4">Address</th>
+                                <th class="p-4">Payment</th>
+                                <th class="p-4">Total</th>
+                                <th class="p-4">Status</th>
+                                <th class="p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="onlineOrdersBody" class="divide-y text-sm">
+                            <tr><td colspan="8" class="p-8 text-center text-stone-400 italic text-sm">Koi order nahi aaya abhi.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bill Print Modal -->
+            <div id="billModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
+                    <div id="billContent" class="p-6">
+                        <!-- Bill injected here by JS -->
+                    </div>
+                    <div class="flex gap-2 px-6 pb-6">
+                        <button onclick="printBill()" class="flex-1 bg-stone-900 text-white py-3 rounded-xl font-bold text-xs uppercase hover:bg-orange-700 transition">
+                            <i class="fas fa-print mr-1"></i> Print
+                        </button>
+                        <button onclick="closeBill()" class="flex-1 bg-stone-100 text-stone-700 py-3 rounded-xl font-bold text-xs uppercase">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-menu" class="admin-section hidden animate-fade-in">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-2xl font-bold">Manage Menu</h3>
+                    <button onclick="openModal()"
+                        class="bg-stone-900 text-white px-6 py-3 rounded-xl font-bold text-xs uppercase flex items-center gap-2">
+                        <i class="fas fa-plus"></i> Add New Dish
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl border overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-stone-50 text-[10px] uppercase font-bold text-stone-400">
+                            <tr>
+                                <th class="p-5">Dish</th>
+                                <th class="p-5">Category</th>
+                                <th class="p-5">Price</th>
+                                <th class="p-5 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menuBody" class="divide-y"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="section-reservations" class="admin-section hidden animate-fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Table Requests</h3>
+                    <span id="res-count-badge" class="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full"></span>
+                </div>
+                <div class="bg-white rounded-2xl border overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-stone-50 text-[10px] uppercase font-bold text-stone-400">
+                            <tr>
+                                <th class="p-5">Guest</th>
+                                <th class="p-5">Date & Time</th>
+                                <th class="p-5">Size</th>
+                                <th class="p-5">Status</th>
+                                <th class="p-5 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservationBody" class="divide-y">
+                            <tr><td colspan="5" class="p-8 text-center text-stone-400 text-sm italic">Koi reservation nahi aaya abhi.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="section-feedback" class="admin-section hidden animate-fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Customer Feedback</h3>
+                    <span id="fb-count-badge" class="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full"></span>
+                </div>
+                <div id="feedbackGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <p class="text-stone-400 col-span-2 text-center py-10 italic text-sm">Abhi koi feedback nahi aaya.</p>
+                </div>
+            </div>
+
+            <div id="section-settings" class="admin-section hidden animate-fade-in">
+                <div class="bg-white p-8 rounded-2xl border max-w-md space-y-6">
+                    <h3 class="font-bold uppercase text-xs tracking-widest text-stone-400">System Controls</h3>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-bold">Night Mode</p>
+                        </div>
+                        <label class="switch"><input type="checkbox" id="nightToggle" onchange="toggleNight(this)"><span
+                                class="slider"></span></label>
+                    </div>
+
+                    <div class="flex items-center justify-between border-t pt-4">
+                        <div>
+                            <p class="text-sm font-bold">Seat Booking</p>
+                            <p class="text-[10px] text-stone-400">Enable/Disable table reservations</p>
+                        </div>
+                        <label class="switch"><input type="checkbox" id="seatBookingToggle"
+                                onchange="toggleFeature('seatBooking', this)"><span class="slider"></span></label>
+                    </div>
+
+                    <div class="flex items-center justify-between border-t pt-4">
+                        <div>
+                            <p class="text-sm font-bold">Online Orders</p>
+                            <p class="text-[10px] text-stone-400">Accept orders from website</p>
+                        </div>
+                        <label class="switch"><input type="checkbox" id="onlineOrderToggle"
+                                onchange="toggleFeature('onlineOrder', this)"><span class="slider"></span></label>
+                    </div>
+
+                    <div class="pt-4">
+                        <button onclick="clearSystemData()"
+                            class="w-full text-red-500 text-xs font-bold uppercase border border-red-100 px-4 py-3 rounded-lg hover:bg-red-50">Clear
+                            All Data</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="uploadModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden p-8 animate-fade-in">
+            <h3 class="font-bold mb-4">Add New Item</h3>
+            <form id="dishForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <input type="text" id="newDishName" placeholder="Dish Name" required
+                    class="w-full border rounded-xl p-3 text-sm">
+                <input type="number" id="newDishPrice" placeholder="Price (₹)" required
+                    class="w-full border rounded-xl p-3 text-sm">
+                <select id="newDishCategory" class="w-full border rounded-xl p-3 text-sm">
+                    <option>Starter</option>
+                    <option>Main Course</option>
+                    <option>Drink</option>
+                </select>
+                <div class="space-y-1">
+                    <p class="text-[10px] font-bold text-stone-400 uppercase px-1">Upload Photo</p>
+                    <input type="file" id="newDishPhoto" accept="image/*" class="text-xs">
+                </div>
+                <div class="flex gap-2 pt-4">
+                    <button type="button" onclick="closeModal()"
+                        class="flex-1 bg-stone-100 py-3 rounded-xl font-bold text-xs">CANCEL</button>
+                    <button type="submit" class="flex-1 bg-orange-600 text-white py-3 rounded-xl font-bold text-xs">ADD
+                        DISH</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ── Session Protection ──
+        const isLoggedIn = localStorage.getItem('adminLoggedIn') || sessionStorage.getItem('adminLoggedIn');
+
+        // Auto logout after 7 days agar remember me tha
+        const loginTime = localStorage.getItem('adminLoginTime');
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        if (loginTime && Date.now() - parseInt(loginTime) > sevenDays) {
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminLoginTime');
+            window.location.href = 'login.html';
+        }
+
+        if (!isLoggedIn) {
+            window.location.href = 'login.html';
+        }
+
+        let cart = {};
+        // ── API URL ──
+        const API = 'https://sushil-cafe.onrender.com';
+
+        // ── Keep-Alive: Render free tier ko jaagna rakhega ──
+        async function wakeUpServer() {
+            try { await fetch(`${API}/api/health`); } catch(e) {}
+        }
+        setInterval(wakeUpServer, 14 * 60 * 1000);
+
+        // ── Server Status Check ──
+        async function checkServerStatus() {
+            const statusEl = document.getElementById('status-text');
+            statusEl.textContent = 'Connecting...';
+            statusEl.className = 'text-[10px] text-yellow-500 font-bold uppercase';
+            try {
+                const res  = await fetch(`${API}/api/health`);
+                const data = await res.json();
+                if (data.success) {
+                    statusEl.textContent = 'System Online';
+                    statusEl.className = 'text-[10px] text-green-600 font-bold uppercase';
+                } else {
+                    statusEl.textContent = 'Server Error';
+                    statusEl.className = 'text-[10px] text-red-500 font-bold uppercase';
+                }
+            } catch(e) {
+                statusEl.textContent = 'Server Offline';
+                statusEl.className = 'text-[10px] text-red-500 font-bold uppercase';
+            }
+        }
+
+        let totalVal = 0;
+        let selectedPaymentMode = 'Cash';
+
+        window.onload = () => {
+            checkServerStatus();
+            loadMenu();
+            loadOrders();
+            loadReservations();
+            loadFeedback();
+            updateDashboardStats();
+            loadSettings();
+            if (localStorage.getItem('nightMode') === 'true') {
+                document.body.classList.add('night-mode');
+                document.getElementById('nightToggle').checked = true;
+            }
+        };
+
+        function showSection(id, btn) {
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('section-' + id).classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active-link'));
+            btn.classList.add('active-link');
+            document.getElementById('page-title').innerText = id.replace('-', ' ');
+            if (id === 'reservations')   loadReservations();
+            if (id === 'feedback')       loadFeedback();
+            if (id === 'online-orders')  loadOrders();
+        }
+
+        function setPaymentMode(mode) {
+            selectedPaymentMode = mode;
+            document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('active'));
+            if (mode === 'Cash') document.getElementById('pay-cash').classList.add('active');
+            else document.getElementById('pay-online').classList.add('active');
+        }
+
+        function renderItemUI(id, name, price, imgUrl, category) {
+            const posCard = `<div class="food-card bg-white p-3 rounded-2xl shadow-sm border flex flex-col items-center" id="pos-card-${id}">
+                <img src="${imgUrl}">
+                <p class="mt-2 font-bold text-sm">${name}</p>
+                <p class="text-orange-600 font-bold text-xs mb-2">₹${price}</p>
+                <div class="flex items-center gap-4 bg-stone-100 rounded-full px-4 py-1">
+                    <button onclick="updateQty('${name}', ${price}, -1)" class="text-stone-500"><i class="fas fa-minus-circle"></i></button>
+                    <span id="qty-${name}" class="text-xs font-bold">0</span>
+                    <button onclick="updateQty('${name}', ${price}, 1)" class="text-stone-500"><i class="fas fa-plus-circle"></i></button>
+                </div>
+            </div>`;
+            document.getElementById('posMenuContainer').insertAdjacentHTML('beforeend', posCard);
+
+            const row = `<tr id="row-${id}">
+                <td class="p-5 font-bold flex items-center gap-3"><img src="${imgUrl}" class="w-8 h-8 rounded-full object-cover"> ${name}</td>
+                <td class="p-5 text-xs text-stone-500">${category}</td>
+                <td class="p-5 font-bold">₹${price}</td>
+                <td class="p-5 text-right"><button onclick="deleteItem('${id}', '${name}')" class="text-red-400"><i class="fas fa-trash"></i></button></td>
+            </tr>`;
+            document.getElementById('menuBody').insertAdjacentHTML('beforeend', row);
+        }
+
+        function saveMenu() {
+            const items = [];
+            document.querySelectorAll('#menuBody tr').forEach(row => {
+                const id = row.id.replace('row-', '');
+                items.push({
+                    id: id,
+                    name: row.querySelector('td:nth-child(1)').innerText.trim(),
+                    category: row.querySelector('td:nth-child(2)').innerText,
+                    price: row.querySelector('td:nth-child(3)').innerText.replace('₹', ''),
+                    img: row.querySelector('img').src
+                });
+            });
+            localStorage.setItem('sushilMenuData', JSON.stringify(items));
+        }
+
+        function loadMenu() {
+            document.getElementById('posMenuContainer').innerHTML = '';
+            document.getElementById('menuBody').innerHTML = '';
+            fetch(`${API}/api/menu`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) data.data.forEach(item => renderItemUI(item._id, item.name, item.price, item.img, item.category));
+                })
+                .catch(() => {
+                    const saved = localStorage.getItem('sushilMenuData');
+                    if (saved) JSON.parse(saved).forEach(item => renderItemUI(item.id, item.name, item.price, item.img, item.category));
+                });
+        }
+
+        // ── Load Reservations from Backend ──
+        function loadReservations() {
+            fetch(`${API}/api/reservations`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success) return;
+                    const saved = data.data;
+                    const tbody = document.getElementById('reservationBody');
+                    const badge = document.getElementById('res-count-badge');
+                    const pending = saved.filter(r => r.status === 'Pending').length;
+                    if (badge) badge.textContent = pending > 0 ? `${pending} Pending` : 'All Clear';
+                    if (saved.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-stone-400 text-sm italic">Koi reservation nahi aaya abhi.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = saved.map(r => `
+                        <tr id="res-row-${r._id}">
+                            <td class="p-5 font-bold">${r.name}<br><span class="text-[10px] text-stone-400">${r.phone}</span></td>
+                            <td class="p-5 text-sm">${r.date} ${r.time}</td>
+                            <td class="p-5 text-sm">${r.guests}</td>
+                            <td class="p-5" id="res-status-${r._id}">
+                                <span class="bg-${r.status === 'Accepted' ? 'green' : r.status === 'Rejected' ? 'red' : 'stone'}-100 text-${r.status === 'Accepted' ? 'green' : r.status === 'Rejected' ? 'red' : 'stone'}-600 px-3 py-1 rounded-full text-[9px] font-bold uppercase">${r.status}</span>
+                            </td>
+                            <td class="p-5 text-right">
+                                ${r.status === 'Pending' ? `
+                                <div class="flex justify-end gap-2">
+                                    <button onclick="decideReservation('${r._id}', 'Accepted', '${r.phone}', '${r.name}')" class="bg-green-100 text-green-700 w-8 h-8 rounded-full"><i class="fas fa-check"></i></button>
+                                    <button onclick="decideReservation('${r._id}', 'Rejected', '${r.phone}', '${r.name}')" class="bg-red-100 text-red-700 w-8 h-8 rounded-full"><i class="fas fa-times"></i></button>
+                                </div>` : '<span class="text-[10px] text-stone-400">Done</span>'}
+                            </td>
+                        </tr>
+                    `).join('');
+                })
+                .catch(() => {
+                    const saved = JSON.parse(localStorage.getItem('sushilReservations') || '[]');
+                    renderReservationsLocal(saved);
+                });
+        }
+
+        function renderReservationsLocal(saved) {
+            const tbody = document.getElementById('reservationBody');
+            if (saved.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-stone-400 text-sm italic">Koi reservation nahi aaya.</td></tr>'; return; }
+            tbody.innerHTML = saved.map(r => `<tr><td class="p-5 font-bold">${r.name}<br><span class="text-[10px] text-stone-400">${r.phone}</span></td><td class="p-5 text-sm">${r.date} ${r.time}</td><td class="p-5 text-sm">${r.guests}</td><td class="p-5"><span class="bg-stone-100 text-stone-600 px-3 py-1 rounded-full text-[9px] font-bold uppercase">${r.status}</span></td><td class="p-5"></td></tr>`).join('');
+        }
+
+        // ── Load Online Orders from Backend ──
+        function loadOrders() {
+            fetch(`${API}/api/orders`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success) return;
+                    const orders = data.data;
+                    const tbody  = document.getElementById('onlineOrdersBody');
+                    const badge  = document.getElementById('orders-count-badge');
+                    const pending = orders.filter(o => o.status === 'Preparing').length;
+                    if (badge) badge.textContent = pending > 0 ? `${pending} New` : `${orders.length} Total`;
+
+                    if (orders.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" class="p-8 text-center text-stone-400 italic text-sm">Koi order nahi aaya abhi.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = orders.map(o => {
+                        const itemsList = Array.isArray(o.items) ? o.items.map(i => `${i.qty}x ${i.name}`).join(', ') : o.items;
+                        const statusColor = o.status === 'Completed' ? 'green' : o.status === 'Cancelled' ? 'red' : 'orange';
+                        return `<tr id="order-row-${o._id}">
+                            <td class="p-4 font-bold text-xs">#${o.orderId || o._id.slice(-6).toUpperCase()}</td>
+                            <td class="p-4 text-xs font-bold">${o.name || '—'}<br><span class="text-stone-400">${o.phone || ''}</span></td>
+                            <td class="p-4 text-xs text-stone-600 max-w-[140px]">${itemsList}</td>
+                            <td class="p-4 text-xs text-stone-500 max-w-[120px]">${o.address || '—'}</td>
+                            <td class="p-4"><span class="text-green-600 font-bold text-[10px] uppercase">${o.payment || 'UPI'}</span></td>
+                            <td class="p-4 font-bold text-sm">₹${o.total || 0}</td>
+                            <td class="p-4" id="order-status-${o._id}">
+                                <span class="bg-${statusColor}-100 text-${statusColor}-600 px-2 py-1 rounded-full text-[9px] font-bold uppercase">${o.status}</span>
+                            </td>
+                            <td class="p-4 text-right">
+                                <div class="flex justify-end gap-1">
+                                    <button onclick="showBill('${o._id}')" class="bg-stone-100 text-stone-700 px-2 py-1 rounded-lg text-[10px] font-bold hover:bg-stone-200 transition">
+                                        <i class="fas fa-receipt"></i> Bill
+                                    </button>
+                                    ${o.status !== 'Completed' ? `<button onclick="completeOrder('${o._id}','${o.phone || ''}','${o.name || ''}')" class="bg-green-600 text-white px-2 py-1 rounded-lg text-[10px] font-bold hover:bg-green-700 transition">Done</button>` : ''}
+                                </div>
+                            </td>
+                        </tr>`;
+                    }).join('');
+                    // Store orders for bill printing
+                    window._ordersCache = data.data;
+                })
+                .catch(() => {
+                    document.getElementById('onlineOrdersBody').innerHTML = '<tr><td colspan="8" class="p-8 text-center text-red-400 text-sm">Server se connect nahi ho paa raha.</td></tr>';
+                });
+        }
+
+        // ── Complete Order ──
+        function completeOrder(id, phone, name) {
+            fetch(`${API}/api/orders/${id}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({status:'Completed'}) })
+                .then(() => {
+                    const el = document.getElementById('order-status-' + id);
+                    if (el) el.innerHTML = '<span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-[9px] font-bold uppercase">Completed</span>';
+                    const row = document.getElementById('order-row-' + id);
+                    if (row) { const btn = row.querySelector('.bg-green-600'); if(btn) btn.remove(); }
+                    if (phone && confirm('Customer ko SMS bhejein?')) {
+                        window.location.href = `sms:+91${phone}?body=${encodeURIComponent(`Hello ${name}, aapka order #${id.slice(-6).toUpperCase()} deliver ho gaya! Shukriya - Sushil Cafe`)}`;
+                    }
+                })
+                .catch(() => alert('Status update failed'));
+        }
+
+        // ── Bill / Invoice System ──
+        function showBill(orderId) {
+            const orders = window._ordersCache || [];
+            const o = orders.find(x => x._id === orderId);
+            if (!o) { alert('Order nahi mila'); return; }
+
+            const items    = Array.isArray(o.items) ? o.items : [];
+            const subtotal = o.subtotal || items.reduce((s, i) => s + (i.qty * i.price), 0);
+            const gst      = o.gst || Math.round(subtotal * 0.05);
+            const total    = o.total || (subtotal + gst);
+            const orderNo  = o.orderId || o._id.slice(-6).toUpperCase();
+            const date     = new Date(o.createdAt || Date.now()).toLocaleString('en-IN');
+
+            const itemsHtml = items.map(i =>
+                `<tr>
+                    <td style="padding:4px 0;font-size:12px;">${i.name}</td>
+                    <td style="padding:4px 0;font-size:12px;text-align:center;">${i.qty}</td>
+                    <td style="padding:4px 0;font-size:12px;text-align:right;">₹${i.price}</td>
+                    <td style="padding:4px 0;font-size:12px;text-align:right;font-weight:bold;">₹${i.qty * i.price}</td>
+                </tr>`
+            ).join('');
+
+            document.getElementById('billContent').innerHTML = `
+                <div id="printArea" style="font-family:'Courier New',monospace;max-width:320px;margin:0 auto;">
+                    <!-- Cafe Header -->
+                    <div style="text-align:center;border-bottom:2px dashed #ccc;padding-bottom:12px;margin-bottom:12px;">
+                        <div style="font-size:22px;font-weight:900;letter-spacing:3px;">☕ SUSHIL CAFE</div>
+                        <div style="font-size:10px;color:#666;margin-top:2px;">TMU Campus, Moradabad</div>
+                        <div style="font-size:10px;color:#666;">+91 7817098672</div>
+                    </div>
+
+                    <!-- Order Info -->
+                    <div style="font-size:11px;margin-bottom:10px;">
+                        <div style="display:flex;justify-content:space-between;"><span>Order #:</span><b>${orderNo}</b></div>
+                        <div style="display:flex;justify-content:space-between;"><span>Date:</span><span>${date}</span></div>
+                        <div style="display:flex;justify-content:space-between;"><span>Customer:</span><b>${o.name || '—'}</b></div>
+                        <div style="display:flex;justify-content:space-between;"><span>Phone:</span><span>${o.phone || '—'}</span></div>
+                        <div style="display:flex;justify-content:space-between;"><span>Payment:</span><b>${o.payment || 'UPI'}</b></div>
+                        ${o.address ? `<div style="margin-top:4px;"><span>Address:</span> ${o.address}</div>` : ''}
+                    </div>
+
+                    <!-- Items Table -->
+                    <div style="border-top:1px dashed #ccc;border-bottom:1px dashed #ccc;padding:8px 0;margin-bottom:8px;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead>
+                                <tr style="font-size:10px;color:#888;">
+                                    <th style="text-align:left;padding-bottom:4px;">Item</th>
+                                    <th style="text-align:center;">Qty</th>
+                                    <th style="text-align:right;">Rate</th>
+                                    <th style="text-align:right;">Amt</th>
+                                </tr>
+                            </thead>
+                            <tbody>${itemsHtml}</tbody>
+                        </table>
+                    </div>
+
+                    <!-- Totals -->
+                    <div style="font-size:12px;">
+                        <div style="display:flex;justify-content:space-between;"><span>Subtotal</span><span>₹${subtotal}</span></div>
+                        <div style="display:flex;justify-content:space-between;color:#666;"><span>GST (5%)</span><span>₹${gst}</span></div>
+                        <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:900;border-top:2px solid #333;margin-top:6px;padding-top:6px;">
+                            <span>TOTAL</span><span>₹${total}</span>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div style="text-align:center;margin-top:14px;padding-top:10px;border-top:2px dashed #ccc;font-size:10px;color:#888;">
+                        Thank you for ordering!<br>Visit again ☕
+                    </div>
+                </div>
+            `;
+
+            const modal = document.getElementById('billModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function printBill() {
+            const content = document.getElementById('printArea').innerHTML;
+            const win = window.open('', '_blank', 'width=400,height=600');
+            win.document.write(`
+                <html><head><title>Bill - Sushil Cafe</title>
+                <style>body{font-family:'Courier New',monospace;padding:20px;}</style></head>
+                <body>${content}</body></html>
+            `);
+            win.document.close();
+            win.print();
+        }
+
+        function closeBill() {
+            const modal = document.getElementById('billModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        function loadFeedback() {
+            fetch(`${API}/api/feedback`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success) return;
+                    const saved = data.data;
+                    const grid = document.getElementById('feedbackGrid');
+                    const badge = document.getElementById('fb-count-badge');
+                    if (badge) badge.textContent = `${saved.length} Total`;
+                    if (saved.length === 0) { grid.innerHTML = '<p class="text-stone-400 col-span-2 text-center py-10 italic text-sm">Abhi koi feedback nahi aaya.</p>'; return; }
+                    const stars = n => '⭐'.repeat(parseInt(n));
+                    grid.innerHTML = saved.map(f => `
+                        <div class="bg-white p-5 rounded-2xl border shadow-sm">
+                            <div class="flex justify-between items-start mb-3">
+                                <h4 class="font-bold text-sm">${f.name}</h4>
+                                <span class="text-orange-500 text-xs">${stars(f.rating)} ${f.rating}.0</span>
+                            </div>
+                            <p class="text-stone-600 text-xs italic">"${f.message}"</p>
+                            <p class="text-[9px] text-stone-400 mt-4 uppercase">${f.createdAt}</p>
+                        </div>
+                    `).join('');
+                })
+                .catch(() => {
+                    const saved = JSON.parse(localStorage.getItem('sushilFeedback') || '[]');
+                    const grid = document.getElementById('feedbackGrid');
+                    if (saved.length === 0) { grid.innerHTML = '<p class="text-stone-400 col-span-2 text-center py-10 italic">Abhi koi feedback nahi aaya.</p>'; return; }
+                    grid.innerHTML = saved.map(f => `<div class="bg-white p-5 rounded-2xl border shadow-sm"><h4 class="font-bold text-sm">${f.name}</h4><p class="text-stone-600 text-xs italic mt-2">"${f.message}"</p></div>`).join('');
+                });
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('newDishName').value;
+            const price = document.getElementById('newDishPrice').value;
+            const cat = document.getElementById('newDishCategory').value;
+            const file = document.getElementById('newDishPhoto').files[0];
+
+            const saveItem = (imgUrl) => {
+                fetch(`${API}/api/menu`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, price, category: cat, img: imgUrl })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        renderItemUI(data.data._id, name, price, imgUrl, cat);
+                        // Also save to localStorage as backup
+                        const saved = JSON.parse(localStorage.getItem('sushilMenuData') || '[]');
+                        saved.push({ id: data.data._id, name, price, category: cat, img: imgUrl });
+                        localStorage.setItem('sushilMenuData', JSON.stringify(saved));
+                    }
+                })
+                .catch(() => {
+                    const id = Date.now();
+                    renderItemUI(id, name, price, imgUrl, cat);
+                    const saved = JSON.parse(localStorage.getItem('sushilMenuData') || '[]');
+                    saved.push({ id, name, price, category: cat, img: imgUrl });
+                    localStorage.setItem('sushilMenuData', JSON.stringify(saved));
+                });
+            };
+
+            const reader = new FileReader();
+            reader.onload = (event) => saveItem(event.target.result);
+            if (file) reader.readAsDataURL(file);
+            else saveItem("https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400");
+            e.target.reset(); closeModal();
+        }
+
+        function deleteItem(id, name) {
+            if (confirm(`Delete ${name}?`)) {
+                fetch(`${API}/api/menu/${id}`, { method: 'DELETE' })
+                    .then(() => {
+                        const row = document.getElementById(`row-${id}`);
+                        const card = document.getElementById(`pos-card-${id}`);
+                        if (row) row.remove();
+                        if (card) card.remove();
+                        // Update localStorage backup
+                        const saved = JSON.parse(localStorage.getItem('sushilMenuData') || '[]').filter(i => i.id != id);
+                        localStorage.setItem('sushilMenuData', JSON.stringify(saved));
+                    })
+                    .catch(() => {
+                        const row = document.getElementById(`row-${id}`);
+                        const card = document.getElementById(`pos-card-${id}`);
+                        if (row) row.remove();
+                        if (card) card.remove();
+                    });
+            }
+        }
+
+        function updateQty(name, price, change) {
+            if (!cart[name]) cart[name] = { qty: 0, price: price };
+            cart[name].qty += change;
+            if (cart[name].qty < 0) cart[name].qty = 0;
+            const el = document.getElementById('qty-' + name);
+            if (el) el.innerText = cart[name].qty;
+            renderBill();
+        }
+
+        function renderBill() {
+            const container = document.getElementById('cart-items');
+            container.innerHTML = ''; totalVal = 0;
+            for (let item in cart) {
+                if (cart[item].qty > 0) {
+                    let cost = cart[item].qty * cart[item].price;
+                    totalVal += cost;
+                    container.innerHTML += `<div class="flex justify-between text-xs"><span>${cart[item].qty}x ${item}</span><b>₹${cost}</b></div>`;
+                }
+            }
+            if (!container.innerHTML) container.innerHTML = '<p class="text-stone-400 text-xs italic">No items selected...</p>';
+            document.getElementById('total-price').innerText = '₹' + totalVal;
+        }
+
+        function completeOfflineOrder() {
+            if (totalVal === 0) return alert("Select items!");
+            let count = parseInt(localStorage.getItem('offlineCount') || 0) + 1;
+            let rev = parseInt(localStorage.getItem('totalRevenue') || 0) + totalVal;
+            localStorage.setItem('offlineCount', count);
+            localStorage.setItem('totalRevenue', rev);
+
+            updateDashboardStats();
+            alert(`Order Saved!\nMode: ${selectedPaymentMode}\nTotal: ₹${totalVal}`);
+
+            cart = {};
+            document.querySelectorAll('[id^="qty-"]').forEach(s => s.innerText = "0");
+            renderBill();
+        }
+
+        // UPDATED: Notification changed to SMS
+        function completeOnlineOrder(orderId, phone) {
+            const statusCell = document.getElementById('status-' + orderId);
+            statusCell.innerHTML = `<span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-[9px] font-bold uppercase">Completed</span>`;
+
+            if (confirm("Order marked as complete. Send SMS notification to customer?")) {
+                const msg = `Your order #${orderId} has been prepared and is ready! Thank you for ordering from Sushil Restaurant.`;
+                window.location.href = `sms:+91${phone}?body=${encodeURIComponent(msg)}`;
+            }
+        }
+
+        function updateDashboardStats() {
+            fetch(`${API}/api/stats`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success) return;
+                    const s = data.data;
+                    document.getElementById('revenue-display').innerText = '₹' + s.totalRevenue;
+                    document.getElementById('online-count-display').innerText = s.totalOrders;
+                    document.getElementById('total-orders-display').innerText = s.totalOrders + parseInt(localStorage.getItem('offlineCount') || 0);
+                    document.getElementById('seat-booking-display').innerText = s.reservations;
+                })
+                .catch(() => {
+                    const offline = parseInt(localStorage.getItem('offlineCount') || 0);
+                    document.getElementById('revenue-display').innerText = '₹' + (localStorage.getItem('totalRevenue') || 0);
+                    document.getElementById('offline-count-display').innerText = offline;
+                    document.getElementById('online-count-display').innerText = 0;
+                    document.getElementById('total-orders-display').innerText = offline;
+                    document.getElementById('seat-booking-display').innerText = JSON.parse(localStorage.getItem('sushilReservations') || '[]').length;
+                });
+        }
+
+        function filterMenu() {
+            let input = document.getElementById('posSearch').value.toLowerCase();
+            document.querySelectorAll('#posMenuContainer .food-card').forEach(card => {
+                let name = card.querySelector('p').innerText.toLowerCase();
+                card.style.display = name.includes(input) ? "flex" : "none";
+            });
+        }
+
+        // UPDATED: Notification changed to SMS
+        function decideReservation(id, status, phone, guestName) {
+            const cell = document.getElementById('res-status-' + id);
+            cell.innerHTML = `<span class="bg-${status === 'Accepted' ? 'green' : 'red'}-100 text-${status === 'Accepted' ? 'green' : 'red'}-700 px-3 py-1 rounded-full text-[9px] font-bold uppercase">${status}</span>`;
+            const row = document.getElementById('res-row-' + id);
+            if (row) { const td = row.querySelector('td:last-child'); if (td) td.innerHTML = '<span class="text-[10px] text-stone-400">Done</span>'; }
+
+            // Backend mein status update karo
+            fetch(`${API}/api/reservations/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            }).catch(() => {});
+
+            const message = status === 'Accepted'
+                ? `Hello ${guestName}, Your table reservation at Sushil Restaurant is CONFIRMED!`
+                : `Hello ${guestName}, We are sorry, but we cannot confirm your table at this time.`;
+            window.location.href = `sms:+91${phone}?body=${encodeURIComponent(message)}`;
+        }
+
+        function loadSettings() {
+            const sb = localStorage.getItem('feat_seatBooking') !== 'false'; // Default true
+            const oo = localStorage.getItem('feat_onlineOrder') !== 'false'; // Default true
+            document.getElementById('seatBookingToggle').checked = sb;
+            document.getElementById('onlineOrderToggle').checked = oo;
+        }
+
+        function toggleFeature(key, cb) {
+            localStorage.setItem('feat_' + key, cb.checked);
+            const status = cb.checked ? "ENABLED" : "DISABLED";
+            alert(`${key.replace(/([A-Z])/g, ' $1').toUpperCase()} is now ${status}`);
+        }
+
+        function clearSystemData() {
+            if (confirm("DANGER: Clear all dishes and stats?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function toggleNight(cb) {
+            document.body.classList.toggle('night-mode', cb.checked);
+            localStorage.setItem('nightMode', cb.checked);
+        }
+
+        function openModal() { document.getElementById('uploadModal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('uploadModal').classList.add('hidden'); }
+
+        function adminLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('adminLoggedIn');
+                localStorage.removeItem('adminLoginTime');
+                sessionStorage.removeItem('adminLoggedIn');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sushil Cafe | Exquisite Dining</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        html { scroll-behavior: smooth; }
+
+        .video-container { position: relative; height: 100vh; width: 100%; overflow: hidden; background: #000; }
+        #hero-video { position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; transform: translate(-50%,-50%); object-fit: cover; filter: brightness(0.5); }
+        .vignette-overlay { position: absolute; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.7) 100%); z-index: 1; }
+        .text-shadow-premium { text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
+        .glass-nav { background: rgba(28,25,23,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+        .gold-gradient {
+            background: linear-gradient(to right, #fde68a, #c2912e, #fde68a);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto; animation: shine 4s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+        .btn-hover-effect:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+
+        /* MOBILE MENU */
+        .mobile-menu {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(12,10,9,0.97); z-index: 100;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem;
+            transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.77,0,0.175,1);
+        }
+        .mobile-menu.open { transform: translateX(0); }
+        .mobile-menu a { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: white; text-decoration: none; letter-spacing: 0.1em; opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease, color 0.2s; }
+        .mobile-menu.open a { opacity: 1; transform: translateY(0); }
+        .mobile-menu.open a:nth-child(1) { transition-delay: 0.10s; }
+        .mobile-menu.open a:nth-child(2) { transition-delay: 0.18s; }
+        .mobile-menu.open a:nth-child(3) { transition-delay: 0.26s; }
+        .mobile-menu.open a:nth-child(4) { transition-delay: 0.34s; }
+        .mobile-menu.open a:nth-child(5) { transition-delay: 0.42s; }
+        .mobile-menu a:hover { color: #f97316; }
+
+        /* HAMBURGER */
+        .hamburger { display: flex; flex-direction: column; justify-content: center; gap: 5px; cursor: pointer; z-index: 200; padding: 6px; }
+        .hamburger span { display: block; width: 24px; height: 2px; background: white; transition: all 0.3s ease; border-radius: 2px; }
+        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* FILTER SCROLL */
+        .filter-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .filter-scroll::-webkit-scrollbar { display: none; }
+        .filter-scroll > div { min-width: max-content; }
+
+        /* ORDER MODAL */
+        #orderModal { display: none; }
+        #orderModal.open { display: flex; }
+        .pay-option input:checked + div {
+            border-color: #c2410c;
+            background-color: #fff7ed;
+            color: #c2410c;
+        }
+
+        /* MOBILE HERO TEXT */
+        @media (max-width: 640px) {
+            .hero-title { font-size: 3rem !important; line-height: 1.15 !important; }
+            .hero-sub   { font-size: 0.95rem !important; margin-top: 1rem !important; margin-bottom: 2rem !important; }
+            .hero-btns a { width: 100%; text-align: center; display: block; }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-900 overflow-x-hidden">
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#gallery"     onclick="closeMenu()">Experience</a>
+        <a href="#menu"        onclick="closeMenu()">Menu</a>
+        <a href="#reservation" onclick="closeMenu()">Reservations</a>
+        <a href="#feedback"    onclick="closeMenu()">Feedback</a>
+        <a href="#" class="text-orange-400" onclick="closeMenu(); openOrderModal()">Order Online</a>
+    </div>
+
+    <!-- NAV -->
+    <nav class="fixed w-full z-50 glass-nav py-4 px-5 md:px-16 flex justify-between items-center">
+        <h1 class="text-lg md:text-2xl font-serif font-bold tracking-[0.3em] text-white">
+            SUSHIL <span class="text-orange-500">CAFE</span>
+        </h1>
+        <div class="hidden md:flex gap-10 font-light uppercase text-xs tracking-widest text-white/90">
+            <a href="#gallery"     class="hover:text-orange-400 transition">Experience</a>
+            <a href="#menu"        class="hover:text-orange-400 transition">Menu</a>
+            <a href="#reservation" class="hover:text-orange-400 transition">Reservations</a>
+            <a href="#feedback"    class="hover:text-orange-400 transition">Feedback</a>
+        </div>
+        <button onclick="openOrderModal()" class="hidden md:block bg-orange-700 text-white px-6 py-2 text-xs uppercase tracking-tighter font-bold rounded-sm hover:bg-orange-800 transition">
+            Order Online
+        </button>
+        <div class="hamburger md:hidden" id="hamburger" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="video-container flex items-center justify-center">
+        <div class="vignette-overlay"></div>
+        <video autoplay muted loop playsinline id="hero-video">
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-chef-preparing-a-gourmet-dish-34531-large.mp4" type="video/mp4">
+        </video>
+        <div class="relative z-10 text-center px-5 w-full max-w-4xl mx-auto" data-aos="zoom-out" data-aos-duration="2000">
+            <span class="uppercase tracking-[0.4em] text-xs mb-4 block text-orange-400 font-semibold text-shadow-premium">
+                Michelin Star Excellence
+            </span>
+            <h2 class="hero-title text-5xl md:text-9xl font-serif text-white leading-tight text-shadow-premium">
+                Art on a <span class="italic gold-gradient">Plate</span>
+            </h2>
+            <p class="hero-sub text-base md:text-2xl font-light text-white/90 italic mt-5 mb-10 max-w-3xl mx-auto text-shadow-premium">
+                Experience a symphony of flavors in an atmosphere designed for the sophisticated palate.
+            </p>
+            <div class="hero-btns flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#reservation" class="btn-hover-effect bg-orange-800 text-white px-8 py-4 rounded-sm font-bold uppercase text-xs tracking-widest transition-all">
+                    Book a Table
+                </a>
+                <a href="#menu" class="btn-hover-effect border border-white text-white px-8 py-4 rounded-sm font-bold uppercase text-xs tracking-widest hover:bg-white hover:text-black transition-all">
+                    View Menu
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- GALLERY -->
+    <section id="gallery" class="py-16 md:py-24 bg-white px-5 md:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-10 md:mb-16" data-aos="fade-up">
+                <h3 class="text-3xl md:text-5xl font-serif mb-3">The Atmosphere</h3>
+                <p class="text-stone-500 tracking-widest uppercase text-xs">A sensory journey awaits</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="overflow-hidden rounded-sm shadow-xl" data-aos="fade-up">
+                    <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=800" class="hover:scale-110 transition duration-700 w-full h-56 md:h-80 object-cover" alt="Ambience">
+                </div>
+                <div class="overflow-hidden rounded-sm shadow-xl" data-aos="fade-up" data-aos-delay="150">
+                    <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800" class="hover:scale-110 transition duration-700 w-full h-56 md:h-80 object-cover" alt="Cocktails">
+                </div>
+                <div class="overflow-hidden rounded-sm shadow-xl" data-aos="fade-up" data-aos-delay="300">
+                    <img src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=800" class="hover:scale-110 transition duration-700 w-full h-56 md:h-80 object-cover" alt="Plating">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MENU -->
+    <section id="menu" class="py-16 md:py-24 bg-stone-50 px-5 md:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-8 md:mb-16" data-aos="fade-up">
+                <h3 class="text-3xl md:text-5xl font-serif mb-3">Our Menu</h3>
+                <p class="text-stone-500 tracking-widest uppercase text-xs">Crafted with passion</p>
+            </div>
+            <div class="filter-scroll mb-6" data-aos="fade-up">
+                <div class="flex gap-3 px-1">
+                    <button onclick="filterMenuFrontend('All', event)"         class="menu-filter-btn whitespace-nowrap px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest border border-orange-700 bg-orange-700 text-white transition">All</button>
+                    <button onclick="filterMenuFrontend('Starter', event)"     class="menu-filter-btn whitespace-nowrap px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest border border-stone-300 text-stone-600 transition">Starter</button>
+                    <button onclick="filterMenuFrontend('Main Course', event)" class="menu-filter-btn whitespace-nowrap px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest border border-stone-300 text-stone-600 transition">Main Course</button>
+                    <button onclick="filterMenuFrontend('Drink', event)"       class="menu-filter-btn whitespace-nowrap px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest border border-stone-300 text-stone-600 transition">Drink</button>
+                </div>
+            </div>
+            <div id="frontendMenuGrid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <p class="text-stone-400 col-span-4 text-center py-10 italic text-sm">Menu load ho raha hai...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESERVATION -->
+    <section id="reservation" class="py-16 md:py-24 bg-stone-900 text-white px-5 md:px-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex flex-col md:flex-row gap-10 md:gap-16 items-start md:items-center">
+                <div class="w-full md:w-1/2" data-aos="fade-right">
+                    <h3 class="text-3xl md:text-4xl font-serif mb-5">Secure Your Experience</h3>
+                    <p class="text-stone-400 mb-6 leading-relaxed text-sm">We provide an intimate setting for our guests. Please reserve your table in advance.</p>
+                    <ul class="space-y-3 text-sm">
+                        <li><i class="fas fa-clock text-orange-500 mr-2"></i> Open: 10:00 AM – 11:00 PM</li>
+                        <li><i class="fas fa-phone text-orange-500 mr-2"></i> +91 7817098672</li>
+                        <li><i class="fas fa-map-marker-alt text-orange-500 mr-2"></i> TMU Campus, Moradabad</li>
+                    </ul>
+                </div>
+                <form id="reservationForm" onsubmit="submitReservation(event)" class="w-full md:w-1/2 bg-white p-6 md:p-8 rounded-2xl text-stone-800 space-y-4 shadow-2xl" data-aos="fade-left">
+                    <div id="resSuccessMsg" class="hidden bg-green-50 border border-green-200 text-green-700 text-xs p-3 rounded-lg font-bold text-center">
+                        ✅ Booking confirmed! We'll contact you soon.
+                    </div>
+                    <div>
+                        <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Full Name</label>
+                        <input id="resName" type="text" placeholder="Your Full Name" required class="w-full border-b border-stone-200 py-2 outline-none focus:border-orange-500 transition text-sm">
+                    </div>
+                    <div>
+                        <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Mobile Number</label>
+                        <input id="resPhone" type="tel" placeholder="+91 00000 00000" required class="w-full border-b border-stone-200 py-2 outline-none focus:border-orange-500 transition text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Date</label>
+                            <input id="resDate" type="date" required class="w-full border-b border-stone-200 py-2 outline-none focus:border-orange-500 bg-transparent text-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Time</label>
+                            <input id="resTime" type="time" required class="w-full border-b border-stone-200 py-2 outline-none focus:border-orange-500 bg-transparent text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Number of Guests</label>
+                        <select id="resGuests" class="w-full border-b border-stone-200 py-2 outline-none focus:border-orange-500 bg-transparent cursor-pointer text-sm">
+                            <option>2 People</option><option>4 People</option><option>Group (6+)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-orange-800 text-white py-4 rounded-lg font-bold hover:bg-orange-900 transition-all active:scale-95 shadow-lg text-sm">
+                        Confirm Booking
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEEDBACK -->
+    <section id="feedback" class="py-16 md:py-24 bg-white px-5 md:px-8">
+        <div class="max-w-2xl mx-auto">
+            <div class="text-center mb-10" data-aos="fade-up">
+                <h3 class="text-3xl md:text-5xl font-serif mb-3">Share Your Experience</h3>
+                <p class="text-stone-500 tracking-widest uppercase text-xs">Your feedback matters to us</p>
+            </div>
+            <form id="feedbackForm" onsubmit="submitFeedback(event)" class="bg-stone-50 p-6 md:p-8 rounded-2xl shadow-sm space-y-4" data-aos="fade-up">
+                <div id="fbSuccessMsg" class="hidden bg-green-50 border border-green-200 text-green-700 text-xs p-3 rounded-lg font-bold text-center">
+                    ✅ Thank you for your feedback!
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold block mb-1">Your Name</label>
+                        <input id="fbName" type="text" placeholder="Rahul Singh" required class="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-orange-500 bg-white">
+                    </div>
+                    <div>
+                        <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold block mb-1">Rating</label>
+                        <select id="fbRating" class="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-orange-500 bg-white cursor-pointer">
+                            <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                            <option value="4">⭐⭐⭐⭐ Good</option>
+                            <option value="3">⭐⭐⭐ Average</option>
+                            <option value="2">⭐⭐ Poor</option>
+                            <option value="1">⭐ Very Poor</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold block mb-1">Your Message</label>
+                    <textarea id="fbMessage" rows="4" placeholder="Tell us about your experience..." required class="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-orange-500 bg-white resize-none"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-stone-900 text-white py-4 rounded-lg font-bold hover:bg-orange-800 transition-all active:scale-95 text-sm">
+                    Submit Feedback
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-stone-900 text-stone-400 py-10 px-5 md:px-16">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+                <div>
+                    <h2 class="text-white font-serif text-xl tracking-widest mb-1">SUSHIL <span class="text-orange-500">CAFE</span></h2>
+                    <p class="text-xs">TMU Campus, Moradabad</p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-5 text-xs uppercase tracking-widest">
+                    <a href="#gallery"     class="hover:text-orange-400 transition">Experience</a>
+                    <a href="#menu"        class="hover:text-orange-400 transition">Menu</a>
+                    <a href="#reservation" class="hover:text-orange-400 transition">Book</a>
+                    <a href="#feedback"    class="hover:text-orange-400 transition">Feedback</a>
+                </div>
+                <div class="flex gap-5 text-lg">
+                    <a href="#" class="hover:text-orange-400 transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-orange-400 transition"><i class="fab fa-facebook"></i></a>
+                    <a href="tel:+917817098672" class="hover:text-orange-400 transition"><i class="fas fa-phone"></i></a>
+                </div>
+            </div>
+            <p class="text-center text-[10px] mt-8 border-t border-stone-800 pt-5">© 2025 Sushil Cafe. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Floating Button -->
+    <div class="fixed bottom-6 right-6 bg-orange-800 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl cursor-pointer hover:scale-110 transition z-40">
+        <i class="fas fa-utensils"></i>
+    </div>
+
+    <!-- ── ONLINE ORDER MODAL ── -->
+    <div id="orderModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="sticky top-0 bg-stone-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-base tracking-wide">🛒 Order Online</h3>
+                    <p class="text-[10px] text-stone-400 mt-0.5">Sushil Cafe — Home Delivery</p>
+                </div>
+                <button onclick="closeOrderModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">✕</button>
+            </div>
+
+            <div class="p-5 space-y-5">
+                <!-- Step 1: Menu Items -->
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">Select Items</p>
+                    <div id="orderMenuItems" class="space-y-2">
+                        <p class="text-stone-400 text-sm italic">Menu load ho raha hai...</p>
+                    </div>
+                </div>
+
+                <!-- Cart Summary -->
+                <div id="orderCartBox" class="hidden bg-orange-50 border border-orange-200 rounded-xl p-4">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-orange-600 mb-2">Your Order</p>
+                    <div id="orderCartItems" class="space-y-1 text-sm"></div>
+                    <div class="border-t border-orange-200 mt-3 pt-3 flex justify-between font-bold">
+                        <span>Subtotal</span><span id="orderSubtotal">₹0</span>
+                    </div>
+                    <div class="flex justify-between text-xs text-stone-500 mt-1">
+                        <span>GST (5%)</span><span id="orderGST">₹0</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-orange-700 text-base mt-1">
+                        <span>Total</span><span id="orderTotal">₹0</span>
+                    </div>
+                </div>
+
+                <!-- Step 2: Delivery Details -->
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">Delivery Details</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold block mb-1">Full Name *</label>
+                            <input id="orderName" type="text" placeholder="Rahul Singh" required class="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-orange-500">
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold block mb-1">Phone Number *</label>
+                            <input id="orderPhone" type="tel" placeholder="+91 00000 00000" required class="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-orange-500">
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-stone-400 font-bold block mb-1">Delivery Address *</label>
+                            <textarea id="orderAddress" rows="2" placeholder="Room No., Block, Area..." required class="w-full border border-stone-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-orange-500 resize-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment -->
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">Payment Method</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="pay-option cursor-pointer">
+                            <input type="radio" name="payMethod" value="UPI" class="hidden" checked>
+                            <div class="border-2 border-orange-500 bg-orange-50 rounded-xl p-3 text-center text-xs font-bold text-orange-700">
+                                📱 UPI
+                            </div>
+                        </label>
+                        <label class="pay-option cursor-pointer">
+                            <input type="radio" name="payMethod" value="Cash" class="hidden">
+                            <div class="border border-stone-200 rounded-xl p-3 text-center text-xs font-bold text-stone-600">
+                                💵 Cash
+                            </div>
+                        </label>
+                        <label class="pay-option cursor-pointer">
+                            <input type="radio" name="payMethod" value="Card" class="hidden">
+                            <div class="border border-stone-200 rounded-xl p-3 text-center text-xs font-bold text-stone-600">
+                                💳 Card
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- UPI QR (shows when UPI selected) -->
+                <div id="upiBox" class="bg-stone-50 border border-stone-200 rounded-xl p-4 text-center">
+                    <p class="text-xs font-bold text-stone-600 mb-2">Scan & Pay</p>
+                    <div class="w-28 h-28 bg-stone-200 rounded-lg mx-auto flex items-center justify-center text-stone-400 text-xs">
+                        UPI QR<br>Here
+                    </div>
+                    <p class="text-[10px] text-stone-400 mt-2">UPI ID: sushilcafe@upi</p>
+                </div>
+
+                <!-- Order Success Message -->
+                <div id="orderSuccessMsg" class="hidden bg-green-50 border border-green-200 text-green-700 text-sm p-4 rounded-xl font-bold text-center">
+                    ✅ Order placed! We'll deliver in 30-45 mins.
+                </div>
+
+                <!-- Place Order Button -->
+                <button onclick="placeOrder()" id="placeOrderBtn" class="w-full bg-orange-800 text-white py-4 rounded-xl font-bold text-sm hover:bg-orange-900 transition-all active:scale-95">
+                    Place Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true, duration: 800 });
+
+        // ── Mobile Menu ──
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const ham  = document.getElementById('hamburger');
+            menu.classList.toggle('open');
+            ham.classList.toggle('open');
+            document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+        }
+        function closeMenu() {
+            document.getElementById('mobileMenu').classList.remove('open');
+            document.getElementById('hamburger').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // ── API URL ──
+        const API = 'https://sushil-cafe.onrender.com';
+
+        // ── Server Wake-up (har 14 min ping — Render sleep prevent) ──
+        async function wakeUpServer() {
+            try { await fetch(`${API}/api/health`); } catch(e) {}
+        }
+        wakeUpServer();
+        setInterval(wakeUpServer, 14 * 60 * 1000);
+
+        // ── Default Menu Items ──
+        const defaultItems = [
+            { _id:1, name:'Paneer Tikka',  price:220, category:'Starter',     img:'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=400' },
+            { _id:2, name:'Veg Biryani',   price:180, category:'Main Course', img:'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400' },
+            { _id:3, name:'Masala Chai',   price:40,  category:'Drink',       img:'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400' },
+            { _id:4, name:'Samosa',        price:60,  category:'Starter',     img:'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400' },
+            { _id:5, name:'Dal Makhani',   price:160, category:'Main Course', img:'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400' },
+            { _id:6, name:'Cold Coffee',   price:80,  category:'Drink',       img:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400' },
+        ];
+        let allMenuItems = [];
+        let orderCart = {};
+
+        // ── 1. MENU: Load from backend ──
+        async function loadFrontendMenu() {
+            try {
+                const res  = await fetch(`${API}/api/menu`);
+                const data = await res.json();
+                allMenuItems = (data.success && data.data.length > 0) ? data.data : defaultItems;
+            } catch {
+                allMenuItems = defaultItems;
+            }
+            renderMenuItems(allMenuItems);
+        }
+
+        function renderMenuItems(items) {
+            document.getElementById('frontendMenuGrid').innerHTML = items.map(item => `
+                <div class="menu-item bg-white rounded-2xl shadow-sm overflow-hidden border border-stone-100 hover:shadow-md transition cursor-pointer" data-cat="${item.category}" onclick="addToOrderFromMenu('${item._id}','${item.name}',${item.price})">
+                    <img src="${item.img}" class="w-full h-36 sm:h-44 object-cover" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'">
+                    <div class="p-3 md:p-4">
+                        <span class="text-[9px] uppercase tracking-widest text-orange-500 font-bold">${item.category}</span>
+                        <h4 class="font-bold text-stone-800 mt-1 text-sm">${item.name}</h4>
+                        <div class="flex justify-between items-center mt-1">
+                            <p class="text-orange-700 font-bold text-sm">₹${item.price}</p>
+                            <button class="bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-1 rounded-full hover:bg-orange-200 transition">+ Add</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        function filterMenuFrontend(cat, e) {
+            document.querySelectorAll('.menu-filter-btn').forEach(b => {
+                b.classList.remove('bg-orange-700','text-white','border-orange-700');
+                b.classList.add('border-stone-300','text-stone-600');
+            });
+            e.target.classList.add('bg-orange-700','text-white','border-orange-700');
+            e.target.classList.remove('border-stone-300','text-stone-600');
+            document.querySelectorAll('.menu-item').forEach(c => {
+                c.style.display = (cat === 'All' || c.dataset.cat === cat) ? 'block' : 'none';
+            });
+        }
+
+        // ── 2. ONLINE ORDER MODAL ──
+        function openOrderModal() {
+            orderCart = {};
+            document.getElementById('orderModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            renderOrderMenu();
+            updateOrderCart();
+            document.getElementById('orderSuccessMsg').classList.add('hidden');
+        }
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function renderOrderMenu() {
+            const container = document.getElementById('orderMenuItems');
+            const items = allMenuItems.length > 0 ? allMenuItems : defaultItems;
+            container.innerHTML = items.map(item => `
+                <div class="flex items-center justify-between bg-stone-50 rounded-xl px-4 py-3 border border-stone-100">
+                    <div class="flex items-center gap-3">
+                        <img src="${item.img}" class="w-10 h-10 rounded-lg object-cover" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'">
+                        <div>
+                            <p class="text-sm font-bold text-stone-800">${item.name}</p>
+                            <p class="text-xs text-orange-600 font-bold">₹${item.price}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="changeQty('${item._id}','${item.name}',${item.price},-1)" class="w-7 h-7 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold text-sm flex items-center justify-center transition">−</button>
+                        <span id="oqty-${item._id}" class="text-sm font-bold w-5 text-center">0</span>
+                        <button onclick="changeQty('${item._id}','${item.name}',${item.price},1)" class="w-7 h-7 rounded-full bg-orange-700 hover:bg-orange-800 text-white font-bold text-sm flex items-center justify-center transition">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToOrderFromMenu(id, name, price) {
+            openOrderModal();
+            changeQty(id, name, price, 1);
+        }
+
+        function changeQty(id, name, price, delta) {
+            if (!orderCart[id]) orderCart[id] = { name, price, qty: 0 };
+            orderCart[id].qty = Math.max(0, orderCart[id].qty + delta);
+            const el = document.getElementById('oqty-' + id);
+            if (el) el.textContent = orderCart[id].qty;
+            updateOrderCart();
+        }
+
+        function updateOrderCart() {
+            const items = Object.values(orderCart).filter(i => i.qty > 0);
+            const cartBox = document.getElementById('orderCartBox');
+            const cartEl  = document.getElementById('orderCartItems');
+
+            if (items.length === 0) {
+                cartBox.classList.add('hidden');
+                return;
+            }
+            cartBox.classList.remove('hidden');
+
+            let subtotal = 0;
+            cartEl.innerHTML = items.map(i => {
+                const cost = i.qty * i.price;
+                subtotal += cost;
+                return `<div class="flex justify-between text-xs"><span>${i.qty}x ${i.name}</span><span class="font-bold">₹${cost}</span></div>`;
+            }).join('');
+
+            const gst   = Math.round(subtotal * 0.05);
+            const total = subtotal + gst;
+            document.getElementById('orderSubtotal').textContent = '₹' + subtotal;
+            document.getElementById('orderGST').textContent      = '₹' + gst;
+            document.getElementById('orderTotal').textContent    = '₹' + total;
+        }
+
+        // Payment method toggle
+        document.querySelectorAll('.pay-option input').forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.getElementById('upiBox').style.display = radio.value === 'UPI' ? 'block' : 'none';
+            });
+        });
+
+        async function placeOrder() {
+            const items = Object.values(orderCart).filter(i => i.qty > 0);
+            const name    = document.getElementById('orderName').value.trim();
+            const phone   = document.getElementById('orderPhone').value.trim();
+            const address = document.getElementById('orderAddress').value.trim();
+            const payment = document.querySelector('input[name="payMethod"]:checked')?.value || 'UPI';
+
+            if (items.length === 0) { alert('Koi item select nahi kiya!'); return; }
+            if (!name)    { alert('Name required hai!'); return; }
+            if (!phone)   { alert('Phone number required hai!'); return; }
+            if (!address) { alert('Address required hai!'); return; }
+
+            const subtotal = items.reduce((s, i) => s + i.qty * i.price, 0);
+            const gst      = Math.round(subtotal * 0.05);
+            const total    = subtotal + gst;
+
+            const btn = document.getElementById('placeOrderBtn');
+            btn.textContent = 'Placing Order...';
+            btn.disabled = true;
+
+            const payload = {
+                items: items.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+                name, phone, address, payment,
+                subtotal, gst, total
+            };
+
+            try {
+                const res  = await fetch(`${API}/api/orders`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('orderSuccessMsg').classList.remove('hidden');
+                    orderCart = {};
+                    document.querySelectorAll('[id^="oqty-"]').forEach(el => el.textContent = '0');
+                    updateOrderCart();
+                    document.getElementById('orderName').value = '';
+                    document.getElementById('orderPhone').value = '';
+                    document.getElementById('orderAddress').value = '';
+                    setTimeout(closeOrderModal, 3000);
+                }
+            } catch {
+                // Fallback localStorage
+                const orders = JSON.parse(localStorage.getItem('sushilOrders') || '[]');
+                orders.unshift({ ...payload, id: Date.now(), status: 'Preparing', orderId: 'ORD-' + Date.now() });
+                localStorage.setItem('sushilOrders', JSON.stringify(orders));
+                document.getElementById('orderSuccessMsg').classList.remove('hidden');
+                setTimeout(closeOrderModal, 3000);
+            }
+            btn.textContent = 'Place Order';
+            btn.disabled = false;
+        }
+
+        // ── 3. RESERVATION ──
+        async function submitReservation(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.textContent = 'Booking...'; btn.disabled = true;
+            const payload = {
+                name:   document.getElementById('resName').value,
+                phone:  document.getElementById('resPhone').value,
+                date:   document.getElementById('resDate').value,
+                time:   document.getElementById('resTime').value,
+                guests: document.getElementById('resGuests').value
+            };
+            try {
+                const res  = await fetch(`${API}/api/reservations`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (data.success) { showSuccess('resSuccessMsg'); document.getElementById('reservationForm').reset(); }
+                else { alert('Error: ' + data.message); }
+            } catch {
+                const arr = JSON.parse(localStorage.getItem('sushilReservations') || '[]');
+                arr.unshift({ ...payload, id: Date.now(), status: 'Pending' });
+                localStorage.setItem('sushilReservations', JSON.stringify(arr));
+                showSuccess('resSuccessMsg');
+                document.getElementById('reservationForm').reset();
+            }
+            btn.textContent = 'Confirm Booking'; btn.disabled = false;
+        }
+
+        // ── 4. FEEDBACK ──
+        async function submitFeedback(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.textContent = 'Submitting...'; btn.disabled = true;
+            const payload = {
+                name:    document.getElementById('fbName').value,
+                rating:  document.getElementById('fbRating').value,
+                message: document.getElementById('fbMessage').value
+            };
+            try {
+                const res  = await fetch(`${API}/api/feedback`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (data.success) { showSuccess('fbSuccessMsg'); document.getElementById('feedbackForm').reset(); }
+            } catch {
+                const arr = JSON.parse(localStorage.getItem('sushilFeedback') || '[]');
+                arr.unshift({ ...payload, id: Date.now() });
+                localStorage.setItem('sushilFeedback', JSON.stringify(arr));
+                showSuccess('fbSuccessMsg');
+                document.getElementById('feedbackForm').reset();
+            }
+            btn.textContent = 'Submit Feedback'; btn.disabled = false;
+        }
+
+        function showSuccess(id) {
+            const el = document.getElementById(id);
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 4000);
+        }
+
+        window.onload = () => loadFrontendMenu();
+    
+
+        const defaultItems = [
+            { _id:1, name:'Paneer Tikka',  price:220, category:'Starter',     img:'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=400' },
+            { _id:2, name:'Veg Biryani',   price:180, category:'Main Course', img:'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400' },
+            { _id:3, name:'Masala Chai',   price:40,  category:'Drink',       img:'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400' },
+            { _id:4, name:'Samosa',        price:60,  category:'Starter',     img:'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400' },
+            { _id:5, name:'Dal Makhani',   price:160, category:'Main Course', img:'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400' },
+            { _id:6, name:'Cold Coffee',   price:80,  category:'Drink',       img:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400' },
+        ];
+
+        async function loadFrontendMenu() {
+            try {
+                const res  = await fetch(`${API}/api/menu`);
+                const data = await res.json();
+                renderMenuItems((data.success && data.data.length > 0) ? data.data : defaultItems);
+            } catch { renderMenuItems(defaultItems); }
+        }
+
+        window.onload = () => loadFrontendMenu();
+    </script>
+</body>
+</html>
